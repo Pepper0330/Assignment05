@@ -1,0 +1,41 @@
+table {
+    margin-top: 20px;
+    width: 100%;
+}
+
+table[class="cv"] td {
+    text-align: center;
+    padding: 20px;
+    margin: 0 15px 10px 0;
+    background-color: #e6f2ff;
+    border-radius: 10px;
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+table[class="cv"] td:hover {
+    background-color: #ffffff;
+}
+
+table[class="cv"] td img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+
+table[class="testimonial"] td {
+    width:50%;
+    text-align: center;
+    padding: 20px;
+    margin: 0px 0px;
+    background-color: #e6f2ff;
+    border-radius: 10px;
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+table[class="testimonial"]{
+    width: 100%;
+}
+
+table[class="testimonial"] td:hover {
+    background-color: #ffffff;
+}
