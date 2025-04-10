@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import './LoginForm.css';
 import AuthContext from './AuthContext';
 import DisplayStatus from './DisplayStatus';
-import Courses from './CoursePage.js';
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -11,13 +10,6 @@ function Login() {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
     const { setAuthStatus } = useContext(AuthContext);
-    const [users, setUsers] = useState([]);
-
-    useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/users')
-            .then(response => response.json())
-            .then(data => setUsers(data));
-    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -33,7 +25,7 @@ function Login() {
         }
     
         try {
-            const {success, message} = await fetch("http://127.0.0.1:5000/login", {
+            const {success, message, id} = await fetch("http://127.0.0.1:5000/login", {
                 method: "POST",
                 headers: {
                     'Content-type':'application/json'
@@ -44,9 +36,11 @@ function Login() {
             setMessage(message);
     
             if (success) {
-                setAuthStatus({ username, isAuthenticated: true });
+                setAuthStatus({ username, id, isAuthenticated: true });
                 setTimeout(() => navigate('/homepage'), 2000);
 
+            }else{
+                return;
             }
         } catch (error) {
             setMessage('Failed to fetch user data!');

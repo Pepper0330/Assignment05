@@ -41,7 +41,7 @@ def login():
     if data["username"] in upass.keys() and data["password"] == upass[data["username"]]:
         return jsonify({"success": True, "message": "Login successful", "id": [student["id"] for student in students if student["username"] == data["username"]][0]})
     
-    return jsonify({"success": False, "message": "Incorrect username or password"})
+    return jsonify({"success": False, "message": "Incorrect username or password", "id": -1})
 
 @app.route("/testimonials", methods=["GET"])
 def testimonials():

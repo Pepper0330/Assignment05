@@ -5,6 +5,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [authStatus, setAuthStatus] = useState({
         username: '',
+        id: '',
         isAuthenticated: false,
     });
 

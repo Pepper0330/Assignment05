@@ -4,12 +4,14 @@ import Footer from './Footer.js';
 import CourseCatalog from './CourseCatalog.js';
 import EnrollmentList from './EnrollmentList.js';
 import { useEffect, useState } from 'react';
-
-const student_id = 1;
+import AuthContext from './AuthContext';
 
 function Homepage() {
     var [enrolledCourses, setEnrolledCourses] = useState([]);
     var [allCourses, setAllCourses] = useState([]);
+    const { authStatus } = useContext(AuthContext);
+
+    student_id = authStatus[id];
 
     useEffect(() => {
         fetch("http://127.0.0.1:5000/student_courses/${student_id}", {
@@ -44,9 +46,17 @@ function Homepage() {
         let enrolledCopy = [...enrolledCourses];
         enrolledCopy.push(course);
 
-
-        setEnrolledCourses(enrolledCopy);
-        localStorage.setItem('courses', JSON.stringify(enrolledCopy));
+        fetch("http://127.0.0.1:5000/enroll/${student_id}" , {
+            methods: "POST",
+            headers: {
+                'Content-type':'application/json'
+            },
+            body: JSON.stringify(course)
+        }).then((resp) => {
+            if(!resp.success){
+                alert(resp.message);
+            }
+        }).catch((e) => console.error(e));
     };
 
     const unenroll = (course) => {
@@ -60,16 +70,12 @@ function Homepage() {
             headers: {
                 'Content-type':'application/json'
             },
-            body: JSON.jsonify(course)
+            body: JSON.stringify(course)
         }).then((resp) => {
-            if(resp == null){
-            }else{
-                setAllCourses(JSON.parse(resp))
+            if(!resp.success){
+                alert(resp.message);
             }
         }).catch((e) => console.error(e));
-
-        setEnrolledCourses(enrolledCopy);
-        localStorage.setItem('courses', JSON.stringify(enrolledCopy));
     };
 
     return (
