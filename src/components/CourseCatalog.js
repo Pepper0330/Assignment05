@@ -1,4 +1,3 @@
-import courses from '../data/courses.js';
 import CourseItem from './CourseItem.js';
 import { styled } from 'styled-components';
 
@@ -14,7 +13,7 @@ function CourseCatalog(props) {
         <div>
             <h2>Course Catalog</h2>
             <CourseList>
-                {courses.map((course) => (
+                {props.courses.map((course) => (
                     <CourseItem course={course} enroll={props.enroll(course)} key={course.id}/>
                 ))}
             </CourseList>
