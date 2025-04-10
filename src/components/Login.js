@@ -33,17 +33,20 @@ function Login() {
         }
     
         try {
-            const validUser = users.find(user => 
-                user.username === username && user.email === password
-            );
+            const {success, message} = await fetch("http://127.0.0.1:5000/validate_login", {
+                method: "POST",
+                headers: {
+                    'Content-type':'application/json'
+                },
+                body: JSON.stringify({'username':username, 'password':password}),
+            });
+
+            setMessage(message);
     
-            if (validUser) {
-                setMessage('Login successful! Redirecting...');
+            if (success) {
                 setAuthStatus({ username, isAuthenticated: true });
                 setTimeout(() => navigate('/homepage'), 2000);
 
-            } else {
-                setMessage('Invalid username or password!');
             }
         } catch (error) {
             setMessage('Failed to fetch user data!');
