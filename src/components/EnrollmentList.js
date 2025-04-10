@@ -9,14 +9,14 @@ const CourseList = styled.div`
     justify-content: center;
 `;
 
-
 function EnrollmentList(props) {
     var enrolledCourses = props.courses;
     var creditHours = 0;
 
     let calcTotalCreditHours = () => {
+        creditHours = 0; // Reset before calculation
         enrolledCourses.forEach((course) => {
-            creditHours += course.creditHours
+            creditHours += course.creditHours;
         });
 
         return creditHours;
@@ -27,7 +27,7 @@ function EnrollmentList(props) {
             <h2>Enrolled Courses</h2>
             <CourseList>
                 {enrolledCourses.map((course) => (
-                    <EnrolledCourse course={course} unenroll={(course) => props.unenroll(course)} key={course.id}/>
+                    <EnrolledCourse course={course} unenroll={props.unenroll} key={course.id}/>
                 ))}
             </CourseList>
             <p>Total credit hours: {calcTotalCreditHours()}</p>
