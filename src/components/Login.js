@@ -33,7 +33,7 @@ function Login() {
         }
     
         try {
-            const {success, message} = await fetch("http://127.0.0.1:5000/validate_login", {
+            const {success, message} = await fetch("http://127.0.0.1:5000/login", {
                 method: "POST",
                 headers: {
                     'Content-type':'application/json'
