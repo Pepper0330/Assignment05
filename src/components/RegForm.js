@@ -11,7 +11,7 @@ function RegForm() {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
         
         // Clear previous messages
@@ -49,8 +49,30 @@ function RegForm() {
         if (errors.length > 0) {
             setMessage(errors.map(err => `• ${err}`).join('<br>'));
         } else {
-            setMessage('Signup successful! Redirecting to login...');
-            setTimeout(() => navigate('/login'), 2000);
+            try {
+                const response = await fetch('http://127.0.0.1:5000/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        email: email
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    setMessage('Signup successful! Redirecting to login...');
+                    setTimeout(() => navigate('/login'), 2000);
+                } else {
+                    setMessage(`• ${data.message}`);
+                }
+            } catch (error) {
+                setMessage('• Server error. Please try again later.');
+            }
         }
     };
 
