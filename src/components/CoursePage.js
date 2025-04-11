@@ -3,7 +3,7 @@ import Header from './Header.js';
 import Footer from './Footer.js';
 import CourseCatalog from './CourseCatalog.js';
 import EnrollmentList from './EnrollmentList.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import AuthContext from './AuthContext';
 
 function Homepage() {
@@ -11,52 +11,58 @@ function Homepage() {
     var [allCourses, setAllCourses] = useState([]);
     const { authStatus } = useContext(AuthContext);
 
-    student_id = authStatus[id];
+    let { id } = authStatus;
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5000/student_courses/${student_id}", {
-            methods: "GET",
+        fetch(`http://127.0.0.1:5000/student_courses/${id}`, {
+            method: "GET",
             headers: {
                 'Content-type':'application/json'
             },
-        }).then((resp) => {
-            if(resp == null){
-            }else{
-                setEnrolledCourses(JSON.parse(resp))
-            }
-        }).catch((e) => console.error(e));
+        })
+        .then(response => response.json())
+        .then(data => setEnrolledCourses(data))
+        .catch((e) => console.error(e));
 
         fetch("http://127.0.0.1:5000/courses" , {
-            methods: "GET",
+            method: "GET",
             headers: {
                 'Content-type':'application/json'
             },
-        }).then((resp) => {
-            if(resp == null){
+        }).then(response => response.json())
+        .then(data => {
+            if(data.length > 0){
+                setAllCourses(data);
             }else{
-                setAllCourses(JSON.parse(resp))
+                setAllCourses([]);
             }
-        }).catch((e) => console.error(e));
-    }, []);
+        }
+        ).catch((e) => console.error(e));
+    }, [id]);
 
     const enroll = (course) => {
+        console.log("enroll " + course.name);
         if (enrolledCourses.includes(course)) {
             return;
         }
         let enrolledCopy = [...enrolledCourses];
         enrolledCopy.push(course);
 
-        fetch("http://127.0.0.1:5000/enroll/${student_id}" , {
-            methods: "POST",
+        fetch(`http://127.0.0.1:5000/enroll/${id}` , {
+            method: "POST",
             headers: {
                 'Content-type':'application/json'
             },
             body: JSON.stringify(course)
-        }).then((resp) => {
-            if(!resp.success){
-                alert(resp.message);
+        }).then(resp => resp.json())
+        .then(data => {
+            if(!data.success){
+                alert(data.message);
+            }else{
+                setEnrolledCourses(enrolledCopy);
             }
         }).catch((e) => console.error(e));
+
     };
 
     const unenroll = (course) => {
@@ -65,25 +71,30 @@ function Homepage() {
         let enrolledCopy = [...enrolledCourses];
         enrolledCopy.splice(enrolledCopy.indexOf(course), 1);
 
-        fetch("http://127.0.0.1:5000/drop/${student_id}" , {
-            methods: "DELETE",
+        fetch(`http://127.0.0.1:5000/drop/${id}` , {
+            method: "DELETE",
             headers: {
                 'Content-type':'application/json'
             },
             body: JSON.stringify(course)
-        }).then((resp) => {
-            if(!resp.success){
-                alert(resp.message);
+        }).then(resp => resp.json())
+        .then(data => {
+            if(!data.success){
+                alert(data.message);
+            }else{
+                setEnrolledCourses(enrolledCopy);
             }
         }).catch((e) => console.error(e));
+
     };
 
     return (
         <div className="courses-page">
             <Header />
                 <div className="content">
-                    <CourseCatalog enroll={(course) => enroll} courses={allCourses} />
-                    <EnrollmentList courses={enrolledCourses} unenroll={(course) => unenroll(course)} />
+
+                    {allCourses.length > 0 && <CourseCatalog enroll={(course) => enroll} courses={allCourses} />}
+                    {enrolledCourses.length > 0 && <EnrollmentList courses={enrolledCourses} unenroll={(course) => unenroll(course)} />}
                 </div>
             <Footer />
         </div>

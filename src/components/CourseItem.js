@@ -1,6 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
+import course1 from '../images/course1.jpg';
+import course2 from '../images/course2.jpg';
 
 const StyledItem = styled.div`
     width: 25%;
@@ -30,7 +32,7 @@ function CourseItem(props) {
 
     return (
         <StyledItem onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-            <CourseImg src={props.course.image} alt={props.course.name} />
+            <CourseImg src={props.course.image === "course1" ? course1 : course2} alt={props.course.name} />
             <h3>{props.course.name}</h3>
             <p>{props.course.instructor}</p>
             <p style={{display: (isHovered) ? "block" : "none"}}>{props.course.description}</p>

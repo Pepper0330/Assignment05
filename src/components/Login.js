@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginForm.css';
 import AuthContext from './AuthContext';
@@ -7,6 +7,7 @@ import DisplayStatus from './DisplayStatus';
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [success, setSuccess] = useState(false);
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
     const { setAuthStatus } = useContext(AuthContext);
@@ -25,7 +26,7 @@ function Login() {
         }
     
         try {
-            const {success, message, id} = await fetch("http://127.0.0.1:5000/login", {
+            const response = await fetch("http://127.0.0.1:5000/login", {
                 method: "POST",
                 headers: {
                     'Content-type':'application/json'
@@ -33,11 +34,14 @@ function Login() {
                 body: JSON.stringify({'username':username, 'password':password}),
             });
 
-            setMessage(message);
+            const { success, message, id } = await response.json();
+
+            await setMessage(message);
+            await setSuccess(success);
     
             if (success) {
                 setAuthStatus({ username, id, isAuthenticated: true });
-                setTimeout(() => navigate('/homepage'), 2000);
+                setTimeout(() => navigate('/courses'), 2000);
 
             }else{
                 return;
@@ -77,8 +81,8 @@ function Login() {
                 <section>
                     <button type="button" className="main-button" onClick={handleLogin}>Login</button> {/* Updated to handle login manually */}
 
-                    <DisplayStatus type={message.includes('successful') ? "success" : "error"} message={message} />
-                    <a href="#" className="forgot-password">Forgot Password?</a>
+                    <DisplayStatus type={success ? "success" : "error"} message={message} />
+                    <a href="/" className="forgot-password">Forgot Password?</a>
                     <br></br>
                     <a href="/signup">Don't have an account? Sign Up</a>
                     <br />

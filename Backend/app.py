@@ -1,3 +1,6 @@
+# Noah Vickerson 30206712
+#Gabe Delisle
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import random
@@ -55,48 +58,53 @@ def testimonials():
 def enroll(student_id):
     data = request.get_json()
     
-    if(student_id not in [student["id"] for student in students]):
+    if(int(student_id) not in [student["id"] for student in students]):
         return jsonify({"success": False, "message": "Invalid student ID"})
     
     student = [student for student in students if student["id"] == int(student_id)][0]
 
-    if(data["course_id"] in student["enrolled_courses"]):
+    if(data["id"] in student["enrolled_courses"]):
         return jsonify({"success": False, "message": "Course already enrolled"})
 
-    student["enrolled_courses"].append(data["course_id"])
+    student["enrolled_courses"].append(data["id"])
     return jsonify({"success": True, "message": "Enrollment successful"})
 
 @app.route("/drop/<student_id>", methods=["DELETE"])
 def drop(student_id):
     data = request.get_json()
 
-    if(student_id not in [student["id"] for student in students]):
+    if(int(student_id) not in [student["id"] for student in students]):
         return jsonify({"success": False, "message": "Invalid student ID"})
     
     student = [student for student in students if student["id"] == int(student_id)][0]
 
-    if(data["course_id"] not in student["enrolled_courses"]):
+    if(data["id"] not in student["enrolled_courses"]):
         return jsonify({"success": False, "message": "Not enrolled in course"})
     
-    student["enrolled_courses"].remove(data["course_id"])
+    student["enrolled_courses"].remove(data["id"])
     return jsonify({"success": True, "message": "Drop successful"})
 
-@app.route("/courses", methods=["POST"])
+@app.route("/courses", methods=["GET"])
 def courses():
     with open("courses.json", 'r') as f:
-        return json.load(f)
+        data = json.load(f)
+        random.shuffle(data)
+
+        return jsonify(data)
     
 @app.route("/student_courses/<student_id>", methods=["GET"])
 def getStudentCourses(student_id):
-    if(student_id not in [student["id"] for student in students]):
+    if(int(student_id) not in [student["id"] for student in students]):
         return jsonify({"success": False, "message": "Invalid student ID"})
     
     student = [student for student in students if student["id"] == int(student_id)][0]
 
     with open("courses.json", 'r') as f:
         courses_data = json.load(f)
+        print("cab")
 
         student_courses = [course for course in courses_data if (course["id"] in student["enrolled_courses"])]
-
         return jsonify(student_courses)
     
+if __name__ == "__main__":
+    app.run(debug=True)
